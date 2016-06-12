@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scrollView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:context="edu.drexel.ea464.doomies.ViewRoomActivity"
+        tools:showIn="@layout/activity_view_room">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:linksClickable="true"
+            android:layout_marginTop="60dp"
+            android:layout_marginRight="10dp"
+            android:layout_gravity="right"
+            android:text="@string/link_back_to_home"
+            android:onClick="goBackHome"
+            android:textColor="@color/colorPrimary"
+            />
+
+        <TextView
+            android:id="@+id/ViewRoomName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="100dp"
+            android:textSize="30dp"
+            android:fontFamily="@string/font_title"
+            android:gravity="center"
+            android:ellipsize="none"
+            android:textStyle="bold"
+            />
+
+        <TextView
+            android:id="@+id/ViewRoomDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:ellipsize="none"
+            android:textSize="20dp"
+            />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="50dp"
+            android:layout_marginTop="30dp"
+            android:textSize="20dp"
+            android:text="@string/button_my_tasks"
+            android:onClick="viewMyTasks"
+            android:background="@color/colorPrimary"
+            />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="50dp"
+            android:layout_marginTop="20dp"
+            android:textSize="20dp"
+            android:text="@string/button_logs"
+            android:onClick="viewLogs"
+            android:background="@color/colorPrimary"
+            />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="50dp"
+            android:layout_marginTop="20dp"
+            android:textSize="20dp"
+            android:text="@string/button_room_duties"
+            android:onClick="goToRoomDuties"
+            android:background="@color/colorPrimary"
+            />
+
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="50dp"
+            android:layout_marginTop="20dp"
+            android:textSize="20dp"
+            android:text="@string/button_room_amends"
+            android:onClick="goToRoomAmends"
+            android:background="@color/colorPrimary"
+            />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="50dp"
+            android:layout_marginTop="20dp"
+            android:textSize="20dp"
+            android:text="@string/button_view_roommates"
+            android:onClick="viewRoommates"
+            android:background="@color/colorPrimary"
+            />
+
+    </LinearLayout>
+</ScrollView>

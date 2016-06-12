@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="edu.drexel.ea464.doomies">
+
+    <!-- To use external file for storage of Data -->
+    <!-- <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> -->
+    <application android:name=".MyApplicationClass">
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".EntryPageActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ShowAboutUsActivity"
+            android:label="@string/Title_About_Us"
+            android:parentActivityName=".EntryPageActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.drexel.ea464.doomies.EntryPageActivity" />
+        </activity>
+        <activity
+            android:name=".RegistrationActivity"
+            android:label="@string/activity_register_name"
+            android:parentActivityName=".EntryPageActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.drexel.ea464.doomies.EntryPageActivity" />
+        </activity>
+        <activity
+            android:name=".ShowTnCActivity"
+            android:label="@string/title_tnc"
+            android:parentActivityName=".RegistrationActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.drexel.ea464.doomies.RegistrationActivity" />
+        </activity>
+        <activity
+            android:name=".WelcomePageActivity"
+            android:label="@string/title_welcome"
+            android:parentActivityName=".EntryPageActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.drexel.ea464.doomies.EntryPageActivity" />
+        </activity>
+        <activity
+            android:name=".CreateRoomActivity"
+            android:label="@string/title_create_room"
+            android:parentActivityName=".WelcomePageActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".WelcomePageActivity" />
+        </activity>
+        <activity
+            android:name=".ViewRoomActivity"
+            android:label="My Room"
+            android:parentActivityName=".WelcomePageActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".WelcomePageActivity" />
+        </activity>
+        <activity
+            android:name=".MyTasksActivity"
+            android:label="My Tasks"
+            android:parentActivityName=".ViewRoomActivity"
+            android:theme="@style/Theme.AppCompat.DayNight.Dialog.MinWidth">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.drexel.ea464.doomies.ViewRoomActivity" />
+        </activity>
+        <activity
+            android:name=".ViewRoommatesActivity"
+            android:label="My Roommates"
+            android:parentActivityName=".ViewRoomActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.drexel.ea464.doomies.ViewRoomActivity" />
+        </activity>
+        <activity
+            android:name=".RoomDutiesActivity"
+            android:label="@string/title_activity_room_duties"
+            android:parentActivityName=".ViewRoomActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.drexel.ea464.doomies.ViewRoomActivity" />
+        </activity>
+        <activity
+            android:name=".RoomAmendsActivity"
+            android:label="Room Amends"
+            android:parentActivityName=".ViewRoomActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.drexel.ea464.doomies.ViewRoomActivity" />
+        </activity>
+    </application>
+
+</manifest>

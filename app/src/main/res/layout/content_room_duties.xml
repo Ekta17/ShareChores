@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center_horizontal"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="edu.drexel.ea464.doomies.RoomDutiesActivity"
+    tools:showIn="@layout/activity_room_duties">
+
+   <!-- <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:linksClickable="true"
+        android:layout_marginTop="60dp"
+        android:layout_marginRight="10dp"
+        android:layout_gravity="right"
+        android:text="@string/link_back_to_home"
+        android:onClick="goBackHomeFromDuty"
+        android:textColor="@color/colorPrimary"
+        />-->
+
+    <TextView
+        android:id="@+id/title_view_roomduties"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@string/font_title"
+        android:text="@string/title_view_Duties"
+        android:textSize="35dp"
+        android:textStyle="bold" />
+
+
+    <TextView
+        android:id="@+id/ErrorViewDuties"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/title_view_roomduties"
+        android:layout_marginTop="20dp"
+        android:gravity="center_horizontal"
+        android:textAlignment="gravity"
+        android:textColor="@color/RED"
+        android:textSize="25dp"
+        android:textStyle="bold" />
+
+    <ListView
+        android:id="@+id/RoomDutiesList"
+        android:layout_width="wrap_content"
+        android:layout_height="200dp"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="100dp"
+        android:layout_marginRight="100dp"
+        android:drawSelectorOnTop="false"
+        android:scrollbars="vertical" />
+
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/RoomDutiesList"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="30dp"
+        android:background="@color/colorPrimary"
+        android:onClick="addDuty"
+        android:text="@string/button_Add_Duty"
+        android:textSize="20dp" />
+
+</RelativeLayout>

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/textView_add_duty_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:fontFamily="casual"
+        android:gravity="center_horizontal"
+        android:text="@string/text_add_duty_title"
+        android:textAlignment="gravity"
+        android:textSize="20dp" />
+
+    <TextView
+        android:id="@+id/ErrorAddDuty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:gravity="center_horizontal"
+        android:layout_below="@id/textView_add_duty_title"
+        android:textAlignment="gravity"
+        android:textColor="@color/RED"
+        android:textSize="15dp"
+        android:layout_marginBottom="20dp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/editText_add_duty_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textView_add_duty_title"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:hint="@string/hint_add_duty_name"
+        android:inputType="text" />
+
+    <EditText
+        android:id="@+id/editText_add_duty_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editText_add_duty_name"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:hint="@string/hint_add_duty_description"
+        android:inputType="text" />
+
+    <TextView
+        android:id="@+id/TextViewSelectAmend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editText_add_duty_description"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="50dp"
+        android:text="Link with Amend:"
+        android:textSize="15dp" />
+
+    <ListView
+        android:id="@+id/LinkDutyWithAmend"
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"
+        android:layout_below="@id/editText_add_duty_description"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="50dp"
+        android:layout_marginTop="20dp"
+        android:layout_toRightOf="@id/TextViewSelectAmend"
+        android:choiceMode="singleChoice"
+        android:drawSelectorOnTop="false"
+        android:listSelector="@color/List_selected_Item"
+        android:scrollbars="vertical"
+        android:textAlignment="gravity" />
+
+    <TextView
+        android:id="@+id/TextViewSelectRoommate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/LinkDutyWithAmend"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="50dp"
+        android:text="Link with Roommate:"
+        android:textSize="15dp" />
+
+    <ListView
+        android:id="@+id/LinkDutyWithRoommate"
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"
+        android:layout_below="@id/LinkDutyWithAmend"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="50dp"
+        android:layout_marginTop="20dp"
+        android:layout_toRightOf="@id/TextViewSelectRoommate"
+        android:choiceMode="singleChoice"
+        android:drawSelectorOnTop="false"
+        android:listSelector="@color/List_selected_Item"
+        android:scrollbars="vertical"
+        android:textAlignment="gravity" />
+
+</RelativeLayout>
