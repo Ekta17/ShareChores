@@ -4,12 +4,17 @@
 
     <!-- To use external file for storage of Data -->
     <!-- <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!--<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />-->
+
     <application android:name=".MyApplicationClass">
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:debuggable="true">
         <activity
             android:name=".EntryPageActivity"
             android:label="@string/app_name"
@@ -112,6 +117,15 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="edu.drexel.ea464.doomies.ViewRoomActivity" />
+        </activity>
+       <activity
+            android:name=".ViewUseridActivity"
+            android:label="@string/title_activity_view_userid"
+            android:parentActivityName=".EntryPageActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.drexel.ea464.doomies.EntryPageActivity" />
         </activity>
     </application>
 

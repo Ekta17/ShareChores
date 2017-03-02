@@ -1,12 +1,11 @@
 package edu.drexel.ea464.doomies;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,7 +19,11 @@ import edu.drexel.ea464.doomies.database.DatabaseAccess;
 
 public class EntryPageActivity extends AppCompatActivity {
 
-    private DatabaseAccess databaseAccess;
+    UserBean getUser;
+    ArrayList<RoomBean> roomsLinked;
+    boolean userVerified=false;
+    AlertDialog alertDialog;
+    AlertDialog.Builder alertBuilder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,11 +32,6 @@ public class EntryPageActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        //this.databaseAccess = DatabaseAccess.getInstance(getApplicationContext());
-        ArrayList<String> myTasksList=((MyApplicationClass)getApplicationContext()).myTaskList;
-        myTasksList.add("Groceries");
-        myTasksList.add("Change Lamp Light");
-        myTasksList.add("Cook Dinner");
     }
 
     @Override
@@ -69,45 +67,66 @@ public class EntryPageActivity extends AppCompatActivity {
     }
 
     public void authenticateUser(View view){
+
+        alertBuilder=new AlertDialog.Builder(this);
+
         EditText editTextUserName=(EditText)findViewById(R.id.username);
-        String userName=editTextUserName.getText().toString();
+        String userName=editTextUserName.getText().toString(); //Email of user
 
         EditText editTextPassword=(EditText)findViewById(R.id.password);
         String password=editTextPassword.getText().toString();
 
-        /*DatabaseAccess databaseAccess = DatabaseAccess.getInstance(this);
-        databaseAccess.open();
+        checkUser user=new checkUser();
+        String[] params={userName,password};
+        user.execute(params);
+    }
 
-        Log.i("details passed ",userName+" "+password);
+    public void ViewUserIds(View view){
+        Intent intent= new Intent(this, ViewUseridActivity.class);
+        startActivity(intent);
+    }
 
-        boolean validUser=databaseAccess.verifyUser(userName,password);
-        databaseAccess.close();
+    private class checkUser extends AsyncTask<String,Void,Boolean> {
 
-        if(validUser){
-            Intent intent= new Intent(this, WelcomePageActivity.class);
-            startActivity(intent);
-        }else{
-            Intent intent=new Intent(this,this.getClass());
-            startActivity(intent);
-        }*/
+        @Override
+        protected Boolean doInBackground(String[] params) {
+            DatabaseAccess databaseAccess=DatabaseAccess.getInstance(EntryPageActivity.this);
 
-        /*Intent intent= new Intent(this, WelcomePageActivity.class);
-        startActivity(intent);*/
+            getUser= databaseAccess.verifyAndGetUser(params[0],params[1]);
 
-        /*databaseAccess.open();
-        boolean validUser=databaseAccess.verifyUser(userName,password);
-        Log.d("validUser?",new Boolean(validUser).toString());
-        databaseAccess.close();
+            if(getUser!=null){
+                userVerified=true;
+                ArrayList<RoomBean> roomsLinked=databaseAccess.getLinkedRooms(params[0]);
 
-        if(validUser){*/
-            Intent intent= new Intent(this, WelcomePageActivity.class);
-            startActivity(intent);
-        /*}else {
-            Intent intent = new Intent(this, this.getClass());
-            startActivity(intent);
+                //Add user details to session
+                ((MyApplicationClass) getApplicationContext()).user.setName(getUser.getName());
+                ((MyApplicationClass) getApplicationContext()).user.setEmail(getUser.getEmail());
+                ((MyApplicationClass) getApplicationContext()).user.setPhone(getUser.getPhone());
+                ((MyApplicationClass) getApplicationContext()).user.setRoomsLinked(roomsLinked);
 
-        }*/
+            }else{
+                userVerified=false;
+            }
 
+            return userVerified;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result){
+            super.onPostExecute(result);
+
+            if(result==true){
+                Intent intent= new Intent(EntryPageActivity.this, WelcomePageActivity.class);
+                startActivity(intent);
+            }else{
+                alertDialog=alertBuilder.create();
+                alertDialog.setMessage("Invalid User Name/Password.");
+                alertDialog.show();
+                Intent intent=new Intent(EntryPageActivity.this,EntryPageActivity.class);
+                startActivity(intent);
+            }
+
+        }
     }
 
 }

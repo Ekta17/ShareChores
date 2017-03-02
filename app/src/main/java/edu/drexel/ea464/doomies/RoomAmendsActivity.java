@@ -2,6 +2,7 @@ package edu.drexel.ea464.doomies;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -23,12 +24,25 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.drexel.ea464.doomies.database.DatabaseAccess;
+
 public class RoomAmendsActivity extends AppCompatActivity {
+
+    String userLoggedIn;
+    String selectedRoom;
 
     ArrayAdapter<String> adapter;
     ListView listView;
-
     ArrayList<String> amendsListItems;
+    Boolean result;
+    ArrayList<AmendBean> roomAmendsDetails;
+
+    Boolean dutiesExistInRoom;
+
+    ArrayList<String> allDutiesInRoom;
+    String[] outerSelectedDuty;
+    AlertDialog dialog;
+    TextView textViewErorr;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,188 +53,226 @@ public class RoomAmendsActivity extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        amendsListItems = ((MyApplicationClass) getApplicationContext()).roomAmendsList;
+        this.selectedRoom = ((MyApplicationClass) getApplicationContext()).selectedRoomName;
 
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, amendsListItems);
-        listView = (ListView) findViewById(R.id.RoomAmendsList);
-        listView.setAdapter(adapter);
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(RoomAmendsActivity.this);
-                builder.setTitle("Amend Linkage");
-                String amendSelected = parent.getAdapter().getItem(position).toString();
-
-                HashMap<String,String> amendDutyMap=((MyApplicationClass)getApplicationContext()).duty_amend_hashMap;
-                ArrayList<String> dutyLinkTo=new ArrayList<String>();
-
-                for(Map.Entry<String,String>entry:amendDutyMap.entrySet()){
-                    if(entry.getValue().contains(amendSelected)){
-                        dutyLinkTo.add(entry.getKey());
-                    }
-                }
-
-                if(dutyLinkTo!=null)
-                    builder.setMessage("Amend: "+amendSelected + " is linked to Duties: " + dutyLinkTo.toString());
-                else
-                    builder.setMessage("Amend is not currently linked to any Duty");
-
-                Log.d("duties linked=", dutyLinkTo.toString());
-
-                builder.setPositiveButton("Ok", null);
-                builder.show();
-            }
-        });
-
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(final AdapterView<?> parent, View view, int position, long id) {
-                AlertDialog.Builder builder=new AlertDialog.Builder(RoomAmendsActivity.this);
-                builder.setTitle("Delete?");
-                builder.setMessage("Are sure you want to delete "+parent.getAdapter().getItem(position).toString());
-                final int positionToRemove=position;
-                builder.setNegativeButton("Cancel",null);
-                builder.setPositiveButton("Ok", new AlertDialog.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String name=parent.getAdapter().getItem(positionToRemove).toString();
-                        if(((MyApplicationClass)getApplicationContext()).roommatesList.size()>0) {
-                            String displaySuccessAlert = "An email has been sent to your Roommates. Once everyone approves your request to delete the Amend "+name+", "+name+" will be deleted from your Room Amends List";
-                            Toast toast = Toast.makeText(RoomAmendsActivity.this, displaySuccessAlert, Toast.LENGTH_LONG);
-                            toast.setGravity(Gravity.CENTER, 0, 0);
-                            toast.show();
-                        }
-
-                        amendsListItems.remove(positionToRemove);
-                        //Log.i("dutiesListItems size = ",Integer.toString(dutiesListItems.size()));
-                        if(amendsListItems.size()<=0 || amendsListItems==null){
-                            TextView textView = (TextView) RoomAmendsActivity.this.findViewById(R.id.ErrorViewAmends);
-                            textView.setText("Room is does not contain any amend. Please add an Amend");
-                            textView.setVisibility(View.VISIBLE);
-                        }
-                        adapter.notifyDataSetChanged();
-                    }
-                });
-                builder.show();
-                return false;
-            }
-        });
-
-        if (amendsListItems.size() <= 0 || amendsListItems == null) {
-            TextView textView = (TextView) findViewById(R.id.ErrorViewAmends);
-            textView.setText("Room is does not contain any amend. Please add an Amend");
-        }
+        AmendsOfRoom amendsOfRoom=new AmendsOfRoom();
+        amendsOfRoom.execute();
     }
 
     public void addAmend(View view) {
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        LayoutInflater inflater = this.getLayoutInflater();
-        final View layoutView = inflater.inflate(R.layout.add_amend_layout, null);
-
-        //Link amend with Duty
-        ArrayList<String> roomDuties = ((MyApplicationClass) getApplicationContext()).roomDutiesList;
-
-        ListView listViewLinkAmendWithDuty = (ListView) layoutView.findViewById(R.id.LinkAmendWithDuty);
-
-        ArrayAdapter<String> adapter1 = new ArrayAdapter<String>(RoomAmendsActivity.this, android.R.layout.simple_list_item_1, roomDuties);
-        if (roomDuties.size() <= 0 || roomDuties == null) {
-            TextView textViewLinkAmendWithDuty = (TextView) layoutView.findViewById(R.id.TextViewSelectDuty);
-            textViewLinkAmendWithDuty.setVisibility(View.GONE);
-        }
-
-
-        listViewLinkAmendWithDuty.setAdapter(adapter1);
-
-        listViewLinkAmendWithDuty.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String selectedDuty = parent.getAdapter().getItem(position).toString();
-                HashMap<String, String> linkAmendWithDuty = ((MyApplicationClass) getApplicationContext()).duty_amend_hashMap;
-                EditText editTextAmendName = (EditText) layoutView.findViewById(R.id.editText_add_amend_name);
-                String amendName = editTextAmendName.getText().toString();
-                linkAmendWithDuty.put(selectedDuty,amendName);
-
-                Log.d("amend linked to duty = " + selectedDuty, linkAmendWithDuty.get(selectedDuty));
-            }
-        });
-
-        builder.setView(layoutView)
-                .setPositiveButton(R.string.button_add_amend_ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        /*EditText editTextName = (EditText) layoutView.findViewById(R.id.editText_add_amend_name);
-                        String name = editTextName.getText().toString();
-
-                        if(((MyApplicationClass)getApplicationContext()).roommatesList.size()>0) {
-                            String displaySuccessAlert = "An email has been sent to your Roommates. Once everyone approves your request to add the Amend "+name+", "+name+" will be added to your Room Amends List";
-                            Toast toast = Toast.makeText(RoomAmendsActivity.this, displaySuccessAlert, Toast.LENGTH_LONG);
-                            toast.setGravity(Gravity.CENTER, 0, 0);
-                            toast.show();
-                        }
-
-                        ((MyApplicationClass) getApplicationContext()).roomAmendsList.add(name);
-
-                        ListView amendsListView = (ListView) RoomAmendsActivity.this.findViewById(R.id.RoomAmendsList);
-                        adapter = new ArrayAdapter<String>(RoomAmendsActivity.this, android.R.layout.simple_list_item_1, amendsListItems );
-                        amendsListView.setAdapter(adapter);
-
-                        TextView textView = (TextView) RoomAmendsActivity.this.findViewById(R.id.ErrorViewAmends);
-                        textView.setVisibility(View.GONE);*/
-                    }
-                })
-                .setNegativeButton(R.string.button_add_amend_cancel, new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-        final AlertDialog dialog=builder.create();
-        dialog.show();
-        //builder.show();
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                EditText editTextName = (EditText) layoutView.findViewById(R.id.editText_add_amend_name);
-                String name = editTextName.getText().toString();
-
-                TextView textViewErorr = (TextView) layoutView.findViewById(R.id.ErrorAddAmend);
-                ArrayList<String> roomAmendsList = ((MyApplicationClass) getApplicationContext()).roomAmendsList;
-
-                if (name.equals("") || name.equals(null) || name.length() <= 0) {
-                    textViewErorr.setText("Please add the name of the Amend.");
-                    textViewErorr.setVisibility(View.VISIBLE);
-                } else if (roomAmendsList.contains(name)) {
-                    textViewErorr.setText("Amend with this name already present");
-                    textViewErorr.setVisibility(View.VISIBLE);
-                } else {
-                    textViewErorr.setVisibility(View.GONE);
-                    if (((MyApplicationClass) getApplicationContext()).roommatesList.size() > 0) {
-                        String displaySuccessAlert = "An email has been sent to your Roommates. Once everyone approves your request to add the Amend " + name + ", " + name + " will be added to your Room Amends List";
-                        Toast toast = Toast.makeText(RoomAmendsActivity.this, displaySuccessAlert, Toast.LENGTH_LONG);
-                        toast.setGravity(Gravity.CENTER, 0, 0);
-                        toast.show();
-                    }
-
-                    ((MyApplicationClass) getApplicationContext()).roomAmendsList.add(name);
-
-                    ListView amendsListView = (ListView) RoomAmendsActivity.this.findViewById(R.id.RoomAmendsList);
-                    adapter = new ArrayAdapter<String>(RoomAmendsActivity.this, android.R.layout.simple_list_item_1, amendsListItems);
-                    amendsListView.setAdapter(adapter);
-
-                    TextView textView = (TextView) RoomAmendsActivity.this.findViewById(R.id.ErrorViewAmends);
-                    textView.setVisibility(View.GONE);
-                    dialog.dismiss();
-                }
-            }
-        });
+        DutiesToDialog dutiesToDialog=new DutiesToDialog();
+        dutiesToDialog.execute();
     }
 
-    /*public void goBackHomeFromAmends(View view){
-        Intent intent=new Intent(this,WelcomePageActivity.class);
-        startActivity(intent);
-    }*/
+    private class AmendsOfRoom extends AsyncTask<Void,Void,Boolean> {
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+
+            DatabaseAccess databaseAccess = DatabaseAccess.getInstance(RoomAmendsActivity.this);
+
+            roomAmendsDetails = databaseAccess.getRoomAmends(selectedRoom);
+
+            if (roomAmendsDetails != null) {
+                amendsListItems = new ArrayList<>();
+
+                for (AmendBean roomAmend : roomAmendsDetails) {
+                    amendsListItems.add(roomAmend.getAmendName());
+                }
+                result=true;
+
+            } else {
+                result=false;
+            }
+
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result){
+            super.onPostExecute(result);
+
+            if(result){
+                adapter = new ArrayAdapter<String>(RoomAmendsActivity.this, android.R.layout.simple_list_item_1, amendsListItems);
+                listView = (ListView) findViewById(R.id.RoomAmendsList);
+                listView.setAdapter(adapter);
+
+                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(RoomAmendsActivity.this);
+                        builder.setTitle("Amend Description");
+                        String amendSelected = parent.getAdapter().getItem(position).toString();
+
+                        String amendDescription = null;
+                        for (AmendBean roomAmend : roomAmendsDetails) {
+                            if (roomAmend.getAmendName().equals(amendSelected)) {
+                                amendDescription = roomAmend.getAmendDescription();
+                            }
+                        }
+
+                        if (amendDescription != null && amendDescription.length() > 0) {
+                            builder.setMessage(amendDescription);
+                        } else {
+                            builder.setMessage("Amend is not described properly.");
+                        }
+
+                        builder.setPositiveButton("Ok", null);
+                        builder.show();
+                    }
+                });
+            }else if (!result){
+                TextView textView = (TextView) findViewById(R.id.ErrorViewAmends);
+                textView.setText("Room is does not contain any amend. Please add an Amend");
+            }
+        }
+    }
+
+    private class DutiesToDialog extends AsyncTask<Void,Void,Boolean> {
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+
+            DatabaseAccess databaseAccess=DatabaseAccess.getInstance(RoomAmendsActivity.this);
+            ArrayList<DutyBean> dutyInRoom=databaseAccess.getRoomDuties(selectedRoom);
+            outerSelectedDuty = new String[1];
+
+            if(dutyInRoom!=null){
+                allDutiesInRoom = new ArrayList<>();
+
+                for (DutyBean duty : dutyInRoom) {
+                    allDutiesInRoom.add(duty.getDutyName());
+                }
+                dutiesExistInRoom=true;
+            }else
+                dutiesExistInRoom=false;
+
+            return dutiesExistInRoom;
+        }
+
+            @Override
+            protected void onPostExecute(Boolean result){
+                super.onPostExecute(result);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(RoomAmendsActivity.this);
+                LayoutInflater inflater = RoomAmendsActivity.this.getLayoutInflater();
+                final View layoutView = inflater.inflate(R.layout.add_amend_layout, null);
+
+                if(result){ //Duties are present in Room
+                    ListView listViewLinkAmendWithDuty = (ListView) layoutView.findViewById(R.id.LinkAmendWithDuty);
+
+                    ArrayAdapter<String> adapter1 = new ArrayAdapter<String>(RoomAmendsActivity.this, android.R.layout.simple_list_item_1, allDutiesInRoom);
+                    listViewLinkAmendWithDuty.setAdapter(adapter1);
+
+                    listViewLinkAmendWithDuty.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            String innerSelectedDuty = parent.getAdapter().getItem(position).toString();
+                            outerSelectedDuty[0]=innerSelectedDuty;
+                        }
+                    });
+
+                }else if (!result){
+                    TextView textViewLinkDutyWithAmend = (TextView) layoutView.findViewById(R.id.TextViewSelectDuty);
+                    textViewLinkDutyWithAmend.setVisibility(View.GONE);
+                }
+
+                builder.setView(layoutView)
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+
+                            }
+                        });
+                dialog=builder.create();
+                dialog.show();
+
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        EditText editTextName = (EditText) layoutView.findViewById(R.id.editText_add_amend_name);
+                        String name = editTextName.getText().toString();
+
+                        EditText editTextDescription = (EditText) layoutView.findViewById(R.id.editText_add_amend_description);
+                        String description = editTextDescription.getText().toString();
+
+                        textViewErorr = (TextView) layoutView.findViewById(R.id.ErrorAddAmend);
+                        ArrayList<String> roomAmendsList = ((MyApplicationClass) getApplicationContext()).roomAmendsList;
+
+                        if (name.equals("") || name == null || name.length() <= 0) {
+                            textViewErorr.setText("Please add the name of the Amend.");
+                            textViewErorr.setVisibility(View.VISIBLE);
+                        } else if (roomAmendsList.contains(name)) {
+                            textViewErorr.setText("Amend with this name already present");
+                            textViewErorr.setVisibility(View.VISIBLE);
+                        } else {
+                            textViewErorr.setVisibility(View.GONE);
+                            AddToAmendsOfRoom addToAmendsOfRoom=new AddToAmendsOfRoom();
+                            addToAmendsOfRoom.execute(name,description);
+                        }}
+                });
+            }//onPostExecute end
+        }
+
+    private class AddToAmendsOfRoom extends AsyncTask<String,Void,Boolean> {
+
+        @Override
+        protected Boolean doInBackground(String... params) {
+
+            String name=params[0];
+            String description=params[1];
+            DatabaseAccess databaseAccess=DatabaseAccess.getInstance(RoomAmendsActivity.this);
+
+            if (databaseAccess.addNewAmendToRoom(selectedRoom, name, description)) {
+
+                if (outerSelectedDuty[0] != null && outerSelectedDuty[0].length() > 0)
+                    databaseAccess.linkDutyWithAmend(selectedRoom, name, outerSelectedDuty[0]);
+
+                ArrayList<AmendBean> roomAmends = databaseAccess.getRoomAmends(selectedRoom);
+
+                if (roomAmends != null) {
+                    amendsListItems = new ArrayList<>();
+
+                    for (AmendBean roomAmend : roomAmends) {
+                        amendsListItems.add(roomAmend.getAmendName());
+                    }
+                }
+                result=true;
+            } else {
+                result=false;
+            }
+
+                return result;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result){
+            super.onPostExecute(result);
+
+            if(result){
+
+                ListView amendsListView = (ListView) RoomAmendsActivity.this.findViewById(R.id.RoomAmendsList);
+                adapter = new ArrayAdapter<String>(RoomAmendsActivity.this, android.R.layout.simple_list_item_1, amendsListItems);
+                amendsListView.setAdapter(adapter);
+
+                TextView textView = (TextView) RoomAmendsActivity.this.findViewById(R.id.ErrorViewAmends);
+                textView.setVisibility(View.GONE);
+                dialog.dismiss();
+
+            }else if(!result){
+                textViewErorr.setText("Some unexpected error has occured");
+                textViewErorr.setVisibility(View.VISIBLE);
+            }
+        }
+    }
 
 }

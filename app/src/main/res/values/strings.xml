@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Doomies</string>
+    <string name="app_name">Share Chores</string>
     <string name="action_settings">Settings</string>
     <string name="font_title">casual</string>
     <string name="login_username">Enter User Name</string>
@@ -7,6 +7,7 @@
     <string name="button_login">Login</string>
     <string name="link_about_us">About Us</string>
     <string name="link_registration">New User? Sign Up here</string>
+    <string name="link_view_UserId">View User Ids</string>
     <string name="title_activity_show_about_us">ShowAboutUsActivity</string>
 
     <!-- About us Activity-->
@@ -115,4 +116,5 @@
     <string name="button_by_duties">View By Duties</string>
     <string name="button_by_roommates">View By Roommates</string>
     <string name="button_chat_room">Chat Room</string>
+    <string name="title_activity_view_userid">ViewUseridActivity</string>
 </resources>

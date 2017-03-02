@@ -6,6 +6,8 @@ import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -19,7 +21,8 @@ import java.util.Locale;
 
 */
 
-public class DatabaseOpenHelper extends SQLiteOpenHelper {
+public class DatabaseOpenHelper extends SQLiteAssetHelper /*SQLiteOpenHelper*/
+{
 
     //private String DATABASE_PATH = "//assets/database/";
     //private final Context context;
@@ -29,13 +32,14 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 
     public DatabaseOpenHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        this.getWritableDatabase();
+        System.out.println("context = "+context.toString());
+        //this.getWritableDatabase();
         //createDB();
         /*this.context = context;
         this.DATABASE_PATH=context.getDatabasePath(DATABASE_NAME).toString();
         createDatabase();*/
     }
-
+/*
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE Login (userId TEXT NOT NULL,password TEXT NOT NULL,logged_in INTEGER NOT NULL,phone TEXT NOT NULL,emailId TEXT NOT NULL,PRIMARY KEY(userId));");
@@ -48,7 +52,7 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
-    }
+    }*/
 
     /*public void createDatabase() {
         Log.i("DatabaseAccess.createDatabase()::", "Creating the database");

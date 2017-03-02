@@ -62,7 +62,7 @@
             android:background="@color/colorPrimary"
             />
 
-        <Button
+        <!--<Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="50dp"
@@ -72,7 +72,7 @@
             android:text="@string/button_logs"
             android:onClick="viewLogs"
             android:background="@color/colorPrimary"
-            />
+            />-->
 
         <Button
             android:layout_width="wrap_content"

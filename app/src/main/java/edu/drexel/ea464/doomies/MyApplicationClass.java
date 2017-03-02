@@ -10,15 +10,17 @@ import java.util.HashMap;
  */
 public class MyApplicationClass extends Application {
 
+   public Boolean DB_CREATION_SUCCESS;
    public ArrayList<String> roomNames=new ArrayList<String>();
-   public ArrayList<String> myTaskList=new ArrayList<String>();
+   //public ArrayList<String> myTaskList=new ArrayList<String>();
 
     public ArrayList<String> roommatesList=new ArrayList<String>();
     public ArrayList<String> roomDutiesList=new ArrayList<String>();
     public ArrayList<String> roomAmendsList=new ArrayList<String>();
 
-    public String roomName;
-    public String roomDescription;
+    public UserBean user=new UserBean();
+    public String selectedRoomName="";
+    public String selectedRoomDescription="";
 
    public HashMap<String,String> roomAndRoomDesc=new HashMap<String,String>();
     public HashMap<String,String> roommateNameAndEmail=new HashMap<String,String>();

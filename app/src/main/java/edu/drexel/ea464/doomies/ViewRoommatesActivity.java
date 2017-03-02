@@ -3,6 +3,7 @@ package edu.drexel.ea464.doomies;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -28,11 +29,23 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import edu.drexel.ea464.doomies.database.DatabaseAccess;
+
 public class ViewRoommatesActivity extends AppCompatActivity {
     ArrayAdapter<String> adapter;
     ListView listView;
 
-    ArrayList<String> roommatesListItems;
+    private String userLoggedIn;
+    private String selectedRoom;
+    ArrayList<String> roommateDetails;
+    Boolean result;
+    String[] outerSelectedDuty;
+    ArrayList<String> allDutiesInRoom;
+
+    Boolean dutiesExistInRoom;
+    AlertDialog dialog;
+    TextView textViewError;
+    ArrayList<String> roommatesInRoom;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,144 +56,71 @@ public class ViewRoommatesActivity extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        ArrayList<String> roommates = ((MyApplicationClass) getApplicationContext()).roommatesList;
-        if (roommates.size() <= 0 || roommates == null)
-            roommates.add("Myself");
+        this.selectedRoom = ((MyApplicationClass) getApplicationContext()).selectedRoomName;
+        RoommatesInRoom roommatesInRoom=new RoommatesInRoom();
+        roommatesInRoom.execute();
 
-        roommatesListItems = ((MyApplicationClass) getApplicationContext()).roommatesList;
+        /*final DatabaseAccess databaseAccess = DatabaseAccess.getInstance(this);
 
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, roommatesListItems);
-        listView = (ListView) findViewById(R.id.RoommatesList);
-        listView.setAdapter(adapter);
+        final ArrayList<String> roommateDetails = databaseAccess.getRoommates(this.selectedRoom);
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(ViewRoommatesActivity.this);
-                builder.setTitle("Roommate Linkage");
-                String roommateSelected = parent.getAdapter().getItem(position).toString();
+        if (roommateDetails != null) {
 
-                HashMap<String,ArrayList<String>> roommateDutyMap=((MyApplicationClass)getApplicationContext()).roommate_duty_hashMap;
-                ArrayList<String> dutyLinkTo=new ArrayList<String>();
+            adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, roommateDetails);
+            listView = (ListView) findViewById(R.id.RoommatesList);
+            listView.setAdapter(adapter);
 
-                if(roommateDutyMap.containsKey(roommateSelected)){
-                    dutyLinkTo=roommateDutyMap.get(roommateSelected);
-                }
-                Log.d("dutyLinked to size=",Integer.toString(dutyLinkTo.size()));
-                if(dutyLinkTo!=null && dutyLinkTo.size()>0)
-                    builder.setMessage("Roommate: "+roommateSelected + " is linked to Duties: " + dutyLinkTo.toString());
-                else
-                    builder.setMessage("Roommate " +roommateSelected+" is not currently linked to any Duty");
-
-                Log.d("duties linked=", dutyLinkTo.toString());
-
-                builder.setPositiveButton("Ok", null);
-                builder.show();
-            }
-        });
-
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(final AdapterView<?> parent, View view, int position, long id) {
-                AlertDialog.Builder builder=new AlertDialog.Builder(ViewRoommatesActivity.this);
-                builder.setTitle("Delete?");
-                builder.setMessage("Are sure you want to delete "+parent.getAdapter().getItem(position).toString());
-                final int positionToRemove=position;
-                builder.setNegativeButton("Cancel",null);
-                builder.setPositiveButton("Ok", new AlertDialog.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                        String name=parent.getAdapter().getItem(positionToRemove).toString();
-                        String displaySuccessAlert="An email has been sent to "+name+" . Once "+name+" approves your request, "+name+" will be deleted from your Roommates list";
-                        Toast toast=Toast.makeText(ViewRoommatesActivity.this,displaySuccessAlert,Toast.LENGTH_LONG);
-                        toast.setGravity(Gravity.CENTER,0,0);
-                        toast.show();
-
-                        roommatesListItems.remove(positionToRemove);
-                        if(roommatesListItems.size()<=0 || roommatesListItems==null){
-                            TextView textView = (TextView) ViewRoommatesActivity.this.findViewById(R.id.ErrorViewRoommates);
-                            textView.setText("Room is Empty. Please add a Roommate");
-                            textView.setVisibility(View.VISIBLE);
-                        }
-                        adapter.notifyDataSetChanged();
-                    }
-                });
-                builder.show();
-                return false;
-            }
-        });
-
-        if (roommatesListItems.size() <= 0 || roommatesListItems == null) {
+        } else {
             TextView textView = (TextView) findViewById(R.id.ErrorViewRoommates);
             textView.setText("Room is Empty. Please add a Roommate");
-        }
+        }*/
 
     }
 
     public void addRoommate(View view) {
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        DutiesToDialog dutiesToDialog=new DutiesToDialog();
+        dutiesToDialog.execute();
+        /*AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = this.getLayoutInflater();
         final View layoutView = inflater.inflate(R.layout.add_roommate_layout, null);
 
         //Link Roommate with Duty
-        ArrayList<String> roomDuties = ((MyApplicationClass) getApplicationContext()).roomDutiesList;
+        this.selectedRoom=((MyApplicationClass)getApplicationContext()).selectedRoomName;
+        final DatabaseAccess databaseAccess=DatabaseAccess.getInstance(this);
+        ArrayList<DutyBean> dutyInRoom=databaseAccess.getRoomDuties(this.selectedRoom);
+        final String[] outerSelectedDuty = new String[1];
 
-        ListView listViewLinkRoommateWithDuty = (ListView) layoutView.findViewById(R.id.LinkRoommateWithDuty);
+        if(dutyInRoom!=null) {
+            ArrayList<String> allDutiesInRoom = new ArrayList<>();
 
-        ArrayAdapter<String> adapter1 = new ArrayAdapter<String>(ViewRoommatesActivity.this, android.R.layout.simple_list_item_1, roomDuties);
-        if (roomDuties.size() <= 0 || roomDuties == null) {
+            for (DutyBean duty : dutyInRoom) {
+                allDutiesInRoom.add(duty.getDutyName());
+            }
+
+            ListView listViewLinkRoommateWithDuty = (ListView) layoutView.findViewById(R.id.LinkRoommateWithDuty);
+
+            ArrayAdapter<String> adapter1 = new ArrayAdapter<String>(ViewRoommatesActivity.this, android.R.layout.simple_list_item_1, allDutiesInRoom);
+            listViewLinkRoommateWithDuty.setAdapter(adapter1);
+
+            listViewLinkRoommateWithDuty.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    String innerSelectedDuty = parent.getAdapter().getItem(position).toString();
+                    outerSelectedDuty[0]=innerSelectedDuty;
+                }
+            });
+
+
+        }else if (dutyInRoom==null) {
             TextView textViewLinkRoommateWithDuty = (TextView) layoutView.findViewById(R.id.TextViewSelectDutyForRoommate);
             textViewLinkRoommateWithDuty.setVisibility(View.GONE);
         }
-
-
-        listViewLinkRoommateWithDuty.setAdapter(adapter1);
-
-        listViewLinkRoommateWithDuty.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String selectedDuty = parent.getAdapter().getItem(position).toString();
-                HashMap<String, ArrayList<String>> linkRoommateWithDuty = ((MyApplicationClass) getApplicationContext()).roommate_duty_hashMap;
-                EditText editTextAmendName = (EditText) layoutView.findViewById(R.id.editText_add_roommate_name);
-                String roommateName = editTextAmendName.getText().toString();
-
-                ArrayList<String> dutiesArray;
-                if(linkRoommateWithDuty.containsKey(roommateName)){
-                    dutiesArray=linkRoommateWithDuty.get(roommateName);
-                    dutiesArray.add(selectedDuty);
-                }else{
-                    dutiesArray=new ArrayList<String>();
-                    dutiesArray.add(selectedDuty);
-                }
-
-                linkRoommateWithDuty.put(roommateName,dutiesArray);
-
-                Log.d("Roommate="+roommateName, "linked to duty = " + linkRoommateWithDuty.get(roommateName));
-            }
-        });
 
         builder.setView(layoutView)
                 .setPositiveButton(R.string.button_add_roommate_ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        /*EditText editTextName = (EditText) layoutView.findViewById(R.id.editText_add_roommate_name);
-                        String name = editTextName.getText().toString();
-
-                        String displaySuccessAlert="An email has been sent to "+name+" . Once "+name+" approves your request, "+name+" will be added to your Roommates list";
-                        Toast toast=Toast.makeText(ViewRoommatesActivity.this,displaySuccessAlert,Toast.LENGTH_LONG);
-                        toast.setGravity(Gravity.CENTER,0,0);
-                        toast.show();
-
-                        ((MyApplicationClass) getApplicationContext()).roommatesList.add(name);
-
-                        ListView roommatesListView = (ListView) ViewRoommatesActivity.this.findViewById(R.id.RoommatesList);
-                        adapter = new ArrayAdapter<String>(ViewRoommatesActivity.this, android.R.layout.simple_list_item_1, roommatesListItems);
-                        roommatesListView.setAdapter(adapter);
-
-                        TextView textView = (TextView) ViewRoommatesActivity.this.findViewById(R.id.ErrorViewRoommates);
-                        textView.setVisibility(View.GONE);*/
                     }
                 })
                 .setNegativeButton(R.string.button_add_roommate_cancel, new DialogInterface.OnClickListener() {
@@ -193,7 +133,6 @@ public class ViewRoommatesActivity extends AppCompatActivity {
 
         final AlertDialog dialog=builder.create();
         dialog.show();
-        //builder.show();
 
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -205,48 +144,217 @@ public class ViewRoommatesActivity extends AppCompatActivity {
                 String email=editTextEmail.getText().toString();
 
                 TextView textViewErorr = (TextView) layoutView.findViewById(R.id.ErrorAddRoommate);
-                //ArrayList<String> roommatesList = ((MyApplicationClass) getApplicationContext()).roommatesList;
-                HashMap<String, String> roommateNameAndEmail=((MyApplicationClass)getApplicationContext()).roommateNameAndEmail;
+           //     HashMap<String, String> roommateNameAndEmail=((MyApplicationClass)getApplicationContext()).roommateNameAndEmail;
 
-               // Log.d(Boolean.toString(roommateNameAndEmail.containsKey(name)),Boolean.toString(roommateNameAndEmail.get(name).equals(email)));
-
-                if (name.equals("") || name.equals(null) || name.length() <= 0) {
+                if (name.equals("") || name==null || name.length() <= 0) {
                     textViewErorr.setText("Please add the name of the Roommate.");
                     textViewErorr.setVisibility(View.VISIBLE);
-                }else if(email.equals("") || email.equals(null) || email.length() <= 0){
+                }else if(email.equals("") || email==null || email.length() <= 0){
                     textViewErorr.setText("Please add the email of the Roommate.");
                     textViewErorr.setVisibility(View.VISIBLE);
-                }else if (roommateNameAndEmail.containsKey(name)&& roommateNameAndEmail.get(name).equals(email)) {
+                }*//*else if (roommateNameAndEmail.containsKey(name)&& roommateNameAndEmail.get(name).equals(email)) {
                     textViewErorr.setText("Roommate with this name and email already present");
                     textViewErorr.setVisibility(View.VISIBLE);
-                } else {
+                }*//* else {
                     textViewErorr.setVisibility(View.GONE);
 
-                    if (((MyApplicationClass) getApplicationContext()).roommatesList.size() > 0) {
-                        String displaySuccessAlert = "An email has been sent to your Roommates. Once everyone approves your request to add the Amend " + name + ", " + name + " will be added to your Room Amends List";
-                        Toast toast = Toast.makeText(ViewRoommatesActivity.this, displaySuccessAlert, Toast.LENGTH_LONG);
-                        toast.setGravity(Gravity.CENTER, 0, 0);
-                        toast.show();
+                    boolean addNewRoommate=databaseAccess.addNewRoommate(selectedRoom,name,email);
+                    if(addNewRoommate){
+
+                        if (outerSelectedDuty[0] != null && outerSelectedDuty[0].length() > 0)
+                            databaseAccess.linkDutyWithAmend(selectedRoom, name, outerSelectedDuty[0]);
+
+                        ArrayList<String> roommatesInRoom=databaseAccess.getRoommates(selectedRoom);
+
+                        ListView roommatesListView = (ListView) ViewRoommatesActivity.this.findViewById(R.id.RoommatesList);
+                        adapter = new ArrayAdapter<String>(ViewRoommatesActivity.this, android.R.layout.simple_list_item_1, roommatesInRoom);
+                        roommatesListView.setAdapter(adapter);
+
+                        TextView textView = (TextView) ViewRoommatesActivity.this.findViewById(R.id.ErrorViewRoommates);
+                        textView.setVisibility(View.GONE);
+                        dialog.dismiss();
+
+                    }else{
+                        textViewErorr.setText("Some unexpected error has occured");
+                        textViewErorr.setVisibility(View.VISIBLE);
                     }
-
-                    ((MyApplicationClass) getApplicationContext()).roommatesList.add(name);
-                    ((MyApplicationClass)getApplicationContext()).roommateNameAndEmail.put(name,email);
-
-                    ListView roommatesListView = (ListView) ViewRoommatesActivity.this.findViewById(R.id.RoommatesList);
-                    adapter = new ArrayAdapter<String>(ViewRoommatesActivity.this, android.R.layout.simple_list_item_1, roommatesListItems);
-                    roommatesListView.setAdapter(adapter);
-
-                    TextView textView = (TextView) ViewRoommatesActivity.this.findViewById(R.id.ErrorViewRoommates);
-                    textView.setVisibility(View.GONE);
-                    dialog.dismiss();
                 }
             }
-        });
+        });*/
     }
 
-   /* public void goBackHomeFromRoommates(View view){
-        Intent intent=new Intent(this,WelcomePageActivity.class);
-        startActivity(intent);
-    }*/
+    private class RoommatesInRoom extends AsyncTask<Void,Void,Boolean> {
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+
+            DatabaseAccess databaseAccess = DatabaseAccess.getInstance(ViewRoommatesActivity.this);
+
+            roommateDetails = databaseAccess.getRoommates(selectedRoom);
+
+            if (roommateDetails != null) {
+                result=true;
+            } else {
+                result=false;
+             }
+
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result){
+            super.onPostExecute(result);
+
+            if(result){
+                adapter = new ArrayAdapter<String>(ViewRoommatesActivity.this, android.R.layout.simple_list_item_1, roommateDetails);
+                listView = (ListView) findViewById(R.id.RoommatesList);
+                listView.setAdapter(adapter);
+            }else if (!result){
+                TextView textView = (TextView) findViewById(R.id.ErrorViewRoommates);
+                textView.setText("Room is Empty. Please add a Roommate");
+            }
+        }
+    }
+
+    private class DutiesToDialog extends AsyncTask<Void,Void,Boolean> {
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+
+            DatabaseAccess databaseAccess=DatabaseAccess.getInstance(ViewRoommatesActivity.this);
+            ArrayList<DutyBean> dutyInRoom=databaseAccess.getRoomDuties(selectedRoom);
+            outerSelectedDuty = new String[1];
+
+            if(dutyInRoom!=null){
+                allDutiesInRoom = new ArrayList<>();
+
+                for (DutyBean duty : dutyInRoom) {
+                    allDutiesInRoom.add(duty.getDutyName());
+                }
+                dutiesExistInRoom=true;
+            }else
+                dutiesExistInRoom=false;
+
+            return dutiesExistInRoom;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result){
+            super.onPostExecute(result);
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(ViewRoommatesActivity.this);
+            LayoutInflater inflater = ViewRoommatesActivity.this.getLayoutInflater();
+            final View layoutView = inflater.inflate(R.layout.add_roommate_layout, null);
+
+            if(result){ //Duties are present in Room
+                ListView listViewLinkRoommateWithDuty = (ListView) layoutView.findViewById(R.id.LinkRoommateWithDuty);
+
+                ArrayAdapter<String> adapter1 = new ArrayAdapter<String>(ViewRoommatesActivity.this, android.R.layout.simple_list_item_1, allDutiesInRoom);
+                listViewLinkRoommateWithDuty.setAdapter(adapter1);
+
+                listViewLinkRoommateWithDuty.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        String innerSelectedDuty = parent.getAdapter().getItem(position).toString();
+                        outerSelectedDuty[0]=innerSelectedDuty;
+                    }
+                });
+
+            }else if (!result){
+                TextView textViewLinkRoommateWithDuty = (TextView) layoutView.findViewById(R.id.TextViewSelectDutyForRoommate);
+                textViewLinkRoommateWithDuty.setVisibility(View.GONE);
+            }
+
+            builder.setView(layoutView)
+                    .setPositiveButton(R.string.button_add_roommate_ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    })
+                    .setNegativeButton(R.string.button_add_roommate_cancel, new DialogInterface.OnClickListener() {
+
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+            dialog=builder.create();
+            dialog.show();
+
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    EditText editTextName = (EditText) layoutView.findViewById(R.id.editText_add_roommate_name);
+                    String name = editTextName.getText().toString();
+
+                    EditText editTextEmail=(EditText)layoutView.findViewById(R.id.editText_add_roommate_email);
+                    String email=editTextEmail.getText().toString();
+
+                    textViewError = (TextView) layoutView.findViewById(R.id.ErrorAddRoommate);
+                    //     HashMap<String, String> roommateNameAndEmail=((MyApplicationClass)getApplicationContext()).roommateNameAndEmail;
+
+                    if (name.equals("") || name==null || name.length() <= 0) {
+                        textViewError.setText("Please add the name of the Roommate.");
+                        textViewError.setVisibility(View.VISIBLE);
+                    }else if(email.equals("") || email==null || email.length() <= 0){
+                        textViewError.setText("Please add the email of the Roommate.");
+                        textViewError.setVisibility(View.VISIBLE);
+                    }/*else if (roommateNameAndEmail.containsKey(name)&& roommateNameAndEmail.get(name).equals(email)) {
+                    textViewErorr.setText("Roommate with this name and email already present");
+                    textViewErorr.setVisibility(View.VISIBLE);
+                }*/ else {
+                        textViewError.setVisibility(View.GONE);
+                        AddRoommatesInRoom addRoommatesInRoom=new AddRoommatesInRoom();
+                        addRoommatesInRoom.execute(name,email);
+                    }}
+            });
+        }//onPostExecute end
+    }
+
+    private class AddRoommatesInRoom extends AsyncTask<String,Void,Boolean> {
+
+        @Override
+        protected Boolean doInBackground(String... params) {
+
+            String name=params[0];
+            String email=params[1];
+
+            DatabaseAccess databaseAccess=DatabaseAccess.getInstance(ViewRoommatesActivity.this);
+
+            if (databaseAccess.addNewRoommate(selectedRoom,name,email)) {
+
+                if (outerSelectedDuty[0] != null && outerSelectedDuty[0].length() > 0)
+                    databaseAccess.linkDutyWithRoommate(selectedRoom, outerSelectedDuty[0], email );
+
+               roommatesInRoom=databaseAccess.getRoommates(selectedRoom);
+
+                result=true;
+            } else {
+                result=false;
+            }
+
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result){
+            super.onPostExecute(result);
+
+            if(result){
+
+                ListView roommatesListView = (ListView) ViewRoommatesActivity.this.findViewById(R.id.RoommatesList);
+                adapter = new ArrayAdapter<String>(ViewRoommatesActivity.this, android.R.layout.simple_list_item_1, roommatesInRoom);
+                roommatesListView.setAdapter(adapter);
+
+                TextView textView = (TextView) ViewRoommatesActivity.this.findViewById(R.id.ErrorViewRoommates);
+                textView.setVisibility(View.GONE);
+                dialog.dismiss();
+
+            }else if(!result){
+                textViewError.setText("Some unexpected error has occured");
+                textViewError.setVisibility(View.VISIBLE);
+            }
+        }
+    }
 
 }

@@ -2,6 +2,7 @@ package edu.drexel.ea464.doomies;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -12,8 +13,15 @@ import android.view.View;
 import android.widget.EditText;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
+import edu.drexel.ea464.doomies.database.DatabaseAccess;
 
 public class WelcomePageActivity extends AppCompatActivity {
+
+    AlertDialog.Builder builder;
+    String[] roomNames;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,42 +40,65 @@ public class WelcomePageActivity extends AppCompatActivity {
     }
 
     public void viewRoom(View view) {
-        Intent intent = getIntent();
-        ArrayList<String> roomArrayList = ((MyApplicationClass) getApplicationContext()).roomNames;
-        final String[] roomNames = roomArrayList.toArray(new String[roomArrayList.size()]);
-        //String noRoomVar="No Rooms created yet, please create a room first.";
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Select Room");
-        if (roomNames.equals(null) || roomNames.length <= 0) {
-            builder.setMessage("No Rooms created yet, please create a room first.");
-            builder.setPositiveButton("OK", null);
-        } else {
-            builder.setItems(roomNames, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    final String roomName = roomNames[which];
-                    /*String roomDesc=((MyApplicationClass)getApplicationContext()).roomAndRoomDesc.get(roomName);
-                    if(roomDesc!=null && !roomDesc.equals(""))
-
-*/
-                    Intent intent = new Intent(WelcomePageActivity.this, ViewRoomActivity.class);
-
-                    EditText editTextRoomName = (EditText) findViewById(R.id.roomName);
-
-                    ((MyApplicationClass) getApplicationContext()).roomName = roomName;
-                    //((MyApplicationClass) getApplicationContext()).roomDescription = roomDescription;
-
-                    startActivity(intent);
-                }
-            });
-        }
-        builder.show();
+        LoadRooms loadRooms=new LoadRooms();
+        loadRooms.execute();
     }
 
     public void logout(View view) {
         Intent intent = new Intent(this, EntryPageActivity.class);
         startActivity(intent);
+    }
+
+    private class LoadRooms extends AsyncTask<Void,Void, String[]>{
+
+        @Override
+        protected String[] doInBackground(Void... params) {
+            DatabaseAccess databaseAccess=DatabaseAccess.getInstance(WelcomePageActivity.this);
+            String loggedInUser=((MyApplicationClass)getApplicationContext()).user.getEmail();
+            ArrayList<RoomBean> roomsLinkedToUser=databaseAccess.getLinkedRooms(loggedInUser);
+
+            if(roomsLinkedToUser!=null && roomsLinkedToUser.size()>0) {
+                ArrayList<String> allLinkedRooms = new ArrayList<>();
+
+                for (RoomBean roomBean : roomsLinkedToUser) {
+                    allLinkedRooms.add(roomBean.getName());
+                }
+                roomNames = allLinkedRooms.toArray(new String[allLinkedRooms.size()]);
+            }
+
+            return roomNames;
+        }
+
+        @Override
+        protected void onPostExecute(String results[]){
+
+            builder = new AlertDialog.Builder(WelcomePageActivity.this);
+            builder.setTitle("Select Room");
+
+            if(results!=null && results.length>0){
+
+                builder.setItems(roomNames, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        final String roomName = roomNames[which];
+                        Intent intent = new Intent(WelcomePageActivity.this, ViewRoomActivity.class);
+                        EditText editTextRoomName = (EditText) findViewById(R.id.roomName);
+
+                        ((MyApplicationClass) getApplicationContext()).selectedRoomName = roomName;
+                        //((MyApplicationClass) getApplicationContext()).selectedRoomDescription = roomDescription;
+
+                        startActivity(intent);
+                    }
+                });
+
+            }else{
+                builder.setMessage("No Rooms created yet, please create a room first.");
+                builder.setPositiveButton("OK", null);
+            }
+
+            builder.show();
+        }
     }
 
 }
