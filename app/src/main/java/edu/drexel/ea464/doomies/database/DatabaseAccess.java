@@ -19,6 +19,7 @@ import edu.drexel.ea464.doomies.UserBean;
 
 /**
  * Created by Ekta on 1/22/2017.
+ * This file handles Database queries
  */
 
 public class DatabaseAccess {
