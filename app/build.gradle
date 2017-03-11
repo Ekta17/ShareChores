@@ -74,7 +74,7 @@ allprojects {
                 //'-processorpath', "libs/GUICheckerForAndroid.jar",
                 '-processorpath', "C:\\Users\\ekta\\AndroidStudioProjects\\Doomies\\app\\libs\\GUICheckerForAndroid.jar;C:\\Users\\ekta\\AndroidStudioProjects\\Doomies\\app\\libs\\checker.jar",
                 //'-processorpath', "${configurations.checkerFramework.asPath}",
-                // uncomment to tu++++++++++++++rn Checker Framework errors into warnings
+                // uncomment to turn Checker Framework errors into warnings
                 //'-Awarns',
                 "-Xbootclasspath/p:${configurations.checkerFrameworkAnnotatedJDK.asPath}"
         ]
