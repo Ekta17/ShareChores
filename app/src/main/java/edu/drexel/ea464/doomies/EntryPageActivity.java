@@ -3,6 +3,8 @@ package edu.drexel.ea464.doomies;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.MainThread;
+import android.support.annotation.UiThread;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -10,13 +12,12 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
-
 import java.util.ArrayList;
+
 
 import edu.drexel.ea464.doomies.database.DatabaseAccess;
 
-/*import edu.drexel.ea464.doomies.database.DatabaseAccess;*/
-
+//@MainThread
 public class EntryPageActivity extends AppCompatActivity {
 
     UserBean getUser;
@@ -66,6 +67,7 @@ public class EntryPageActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    @UiThread
     public void authenticateUser(View view){
 
         alertBuilder=new AlertDialog.Builder(this);
@@ -86,6 +88,7 @@ public class EntryPageActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+   @MainThread
     private class checkUser extends AsyncTask<String,Void,Boolean> {
 
         @Override

@@ -1,5 +1,14 @@
 apply plugin: 'com.android.application'
 
+//apply plugin: 'java' //This causes --> Error:The 'java' plugin has been applied, but it is not compatible with the Android plugins.
+
+assert (JavaVersion.current().isJava7() || JavaVersion.current().isJava8Compatible())
+
+
+// Indicates the version of Java to which the source and class files should conform
+// If set to JavaVersion.VERSION_1_7 then type annotations must be in comments.
+ext.targetJavaVersion = JavaVersion.current().isJava7() ? JavaVersion.VERSION_1_7 : JavaVersion.VERSION_1_8
+
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.3"
@@ -10,6 +19,7 @@ android {
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -22,8 +32,57 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:23.3.0'
-    compile 'com.android.support:design:23.3.0'
-    compile 'com.readystatesoftware.sqliteasset:sqliteassethelper:+'
+    compile 'com.android.support:appcompat-v7:23.4.0'
+    compile 'com.android.support:design:23.4.0'
     compile files('libs/postgresql-9.4.1212.jre6.jar')
+    compile files('libs/checker.jar')
+    compile files('libs/GUICheckerForAndroid.jar')
+}
+
+
+configurations {
+    checkerFrameworkJavac {
+        description = 'a customization of the OpenJDK javac compiler with additional support for type annotations'
+    }
+    checkerFrameworkAnnotatedJDK {
+        description = 'a copy of JDK classes with Checker Framework type qualifers inserted'
+    }
+    checkerFramework {
+        description = 'The Checker Framework: custom pluggable types for Java'
+    }
+}
+
+dependencies {
+    def checkerFrameworkVersion = '2.1.6'
+    def jdkVersion = JavaVersion.current().isJava7() ? 'jdk7' : 'jdk8'
+    checkerFrameworkAnnotatedJDK "org.checkerframework:${jdkVersion}:${checkerFrameworkVersion}"
+    checkerFrameworkJavac "org.checkerframework:compiler:${checkerFrameworkVersion}"
+    compile "org.checkerframework:checker:${checkerFrameworkVersion}"
+    //checkerFramework "org.checkerframework:checker:${checkerFrameworkVersion}"
+    //checkerFrameworkJavac project(':GUICheckerForAndroid')
+    //checkerFramework project(':GUICheckerForAndroid')
+}
+
+/*
+Below code taken from :https://github.com/typetools/checker-framework/blob/8b368506e66ef1c9e3640c17fa96aaec90109e84/docs/examples/GradleExamples/GradleJava7Example/build.gradle
+*/
+
+allprojects {
+    tasks.withType(JavaCompile).all { JavaCompile compile ->
+        compile.options.compilerArgs = [
+                '-processor', 'GenericDefualtPackage.GenericEffectChecker',
+                //'-processorpath', "libs/GUICheckerForAndroid.jar",
+                '-processorpath', "C:\\Users\\ekta\\AndroidStudioProjects\\Doomies\\app\\libs\\GUICheckerForAndroid.jar;C:\\Users\\ekta\\AndroidStudioProjects\\Doomies\\app\\libs\\checker.jar",
+                //'-processorpath', "${configurations.checkerFramework.asPath}",
+                // uncomment to tu++++++++++++++rn Checker Framework errors into warnings
+                //'-Awarns',
+                "-Xbootclasspath/p:${configurations.checkerFrameworkAnnotatedJDK.asPath}"
+        ]
+        options.bootClasspath = "${configurations.checkerFrameworkJavac.asPath}:"+System.getProperty("sun.boot.class.path") +":"+ options.bootClasspath
+        if (targetJavaVersion.isJava7()) {
+            compile.options.compilerArgs += ['-source', '7', '-target', '7']
+            options.fork = true
+            options.forkOptions.jvmArgs += ["-Xbootclasspath/p:${configurations.checkerFrameworkJavac.asPath}"]
+        }
+    }
 }

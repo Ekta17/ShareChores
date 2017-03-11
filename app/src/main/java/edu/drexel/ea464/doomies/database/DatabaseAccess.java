@@ -1,5 +1,6 @@
 package edu.drexel.ea464.doomies.database;
 
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -229,12 +230,11 @@ public class DatabaseAccess {
         } catch (SQLException sqlEx) {
             sqlEx.printStackTrace();
         }
-
-        if(resultSet!=null){
-            result=true;
-        }else{
-            result=false;
-        }
+            if(resultSet!=null){
+                result=true;
+            }else{
+                result=false;
+            }
 
         try {
             resultSet.close();
