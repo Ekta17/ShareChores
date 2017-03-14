@@ -53,7 +53,7 @@ configurations {
 }
 
 dependencies {
-    def checkerFrameworkVersion = '2.1.6'
+    def checkerFrameworkVersion = '2.1.9'
     def jdkVersion = JavaVersion.current().isJava7() ? 'jdk7' : 'jdk8'
     checkerFrameworkAnnotatedJDK "org.checkerframework:${jdkVersion}:${checkerFrameworkVersion}"
     checkerFrameworkJavac "org.checkerframework:compiler:${checkerFrameworkVersion}"
