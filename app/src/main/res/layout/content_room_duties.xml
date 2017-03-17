@@ -9,18 +9,6 @@
     tools:context="edu.drexel.ea464.doomies.RoomDutiesActivity"
     tools:showIn="@layout/activity_room_duties">
 
-   <!-- <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:linksClickable="true"
-        android:layout_marginTop="60dp"
-        android:layout_marginRight="10dp"
-        android:layout_gravity="right"
-        android:text="@string/link_back_to_home"
-        android:onClick="goBackHomeFromDuty"
-        android:textColor="@color/colorPrimary"
-        />-->
-
     <TextView
         android:id="@+id/title_view_roomduties"
         android:layout_width="wrap_content"

@@ -1,7 +1,5 @@
 apply plugin: 'com.android.application'
 
-//apply plugin: 'java' //This causes --> Error:The 'java' plugin has been applied, but it is not compatible with the Android plugins.
-
 assert (JavaVersion.current().isJava7() || JavaVersion.current().isJava8Compatible())
 
 
@@ -53,29 +51,19 @@ configurations {
 }
 
 dependencies {
-    def checkerFrameworkVersion = '2.1.9'
+    def checkerFrameworkVersion = '2.1.6'
     def jdkVersion = JavaVersion.current().isJava7() ? 'jdk7' : 'jdk8'
     checkerFrameworkAnnotatedJDK "org.checkerframework:${jdkVersion}:${checkerFrameworkVersion}"
     checkerFrameworkJavac "org.checkerframework:compiler:${checkerFrameworkVersion}"
     compile "org.checkerframework:checker:${checkerFrameworkVersion}"
-    //checkerFramework "org.checkerframework:checker:${checkerFrameworkVersion}"
-    //checkerFrameworkJavac project(':GUICheckerForAndroid')
-    //checkerFramework project(':GUICheckerForAndroid')
 }
-
-/*
-Below code taken from :https://github.com/typetools/checker-framework/blob/8b368506e66ef1c9e3640c17fa96aaec90109e84/docs/examples/GradleExamples/GradleJava7Example/build.gradle
-*/
 
 allprojects {
     tasks.withType(JavaCompile).all { JavaCompile compile ->
         compile.options.compilerArgs = [
+                '-AprintErrorStack',
                 '-processor', 'GenericDefualtPackage.GenericEffectChecker',
-                //'-processorpath', "libs/GUICheckerForAndroid.jar",
                 '-processorpath', "C:\\Users\\ekta\\AndroidStudioProjects\\Doomies\\app\\libs\\GUICheckerForAndroid.jar;C:\\Users\\ekta\\AndroidStudioProjects\\Doomies\\app\\libs\\checker.jar",
-                //'-processorpath', "${configurations.checkerFramework.asPath}",
-                // uncomment to turn Checker Framework errors into warnings
-                //'-Awarns',
                 "-Xbootclasspath/p:${configurations.checkerFrameworkAnnotatedJDK.asPath}"
         ]
         options.bootClasspath = "${configurations.checkerFrameworkJavac.asPath}:"+System.getProperty("sun.boot.class.path") +":"+ options.bootClasspath

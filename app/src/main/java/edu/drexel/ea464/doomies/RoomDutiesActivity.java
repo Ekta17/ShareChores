@@ -1,16 +1,11 @@
 package edu.drexel.ea464.doomies;
 
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -18,12 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import edu.drexel.ea464.doomies.database.DatabaseAccess;
 
@@ -60,153 +50,6 @@ public class RoomDutiesActivity extends AppCompatActivity {
     }
 
     public void addDuty(View view) {
-
-        /*AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        LayoutInflater inflater = this.getLayoutInflater();
-        final View layoutView = inflater.inflate(R.layout.add_duty_layout, null);
-
-        EditText editTextDutyName = (EditText) layoutView.findViewById(R.id.editText_add_duty_name);
-        String dutyName = editTextDutyName.getText().toString();
-
-        this.selectedRoom=((MyApplicationClass)getApplicationContext()).selectedRoomName;
-        //Link Duty with Amends
-        final DatabaseAccess databaseAccess=DatabaseAccess.getInstance(this);
-        ArrayList<String> roommatesInRoom=databaseAccess.getRoommates(this.selectedRoom);
-        ArrayList<AmendBean> amendsInRoom=databaseAccess.getRoomAmends(this.selectedRoom);
-        final String[] outerSelectedAmend = new String[1];
-        final String[] outerSelectedRoommate=new String[1];
-
-        if(amendsInRoom!=null) {
-            ArrayList<String> allAmendsInRoom = new ArrayList<>();
-
-            for (AmendBean amend : amendsInRoom) {
-                allAmendsInRoom.add(amend.getAmendName());
-            }
-
-         ListView listViewLinkDutyWithAmend = (ListView) layoutView.findViewById(R.id.LinkDutyWithAmend);
-
-            ArrayAdapter<String> adapter1 = new ArrayAdapter<String>(RoomDutiesActivity.this, android.R.layout.simple_list_item_1, allAmendsInRoom);
-            listViewLinkDutyWithAmend.setAdapter(adapter1);
-
-            listViewLinkDutyWithAmend.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    String innerSelectedAmend = parent.getAdapter().getItem(position).toString();
-                    outerSelectedAmend[0]=innerSelectedAmend;
-                }
-            });
-
-        }else if (amendsInRoom==null) {
-            TextView textViewLinkDutyWithAmend = (TextView) layoutView.findViewById(R.id.TextViewSelectAmend);
-            textViewLinkDutyWithAmend.setVisibility(View.GONE);
-        }
-
-        //Link duty with Roommate
-
-       ArrayList<String> roommates;
-
-        if (roommatesInRoom.size() <= 0 || roommatesInRoom==null) {
-            roommates = new ArrayList<>();
-            roommates.add(((MyApplicationClass) getApplicationContext()).user.getName());//logged in user
-        }else{
-            roommates=roommatesInRoom;
-        }
-
-        ListView listViewLinkDutyWithRoommate = (ListView) layoutView.findViewById(R.id.LinkDutyWithRoommate);
-        ArrayAdapter<String> adapter2 = new ArrayAdapter<String>(RoomDutiesActivity.this, android.R.layout.simple_list_item_1, roommates);
-        listViewLinkDutyWithRoommate.setAdapter(adapter2);
-
-        listViewLinkDutyWithRoommate.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String innerSelectedRoommate = parent.getAdapter().getItem(position).toString();
-                outerSelectedRoommate[0]=innerSelectedRoommate;
-
-            }
-        });
-
-        builder.setView(layoutView)
-                .setPositiveButton(R.string.button_add_duty_ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                })
-                .setNegativeButton(R.string.button_add_duty_cancel, new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-
-                    }
-                });
-
-        final AlertDialog dialog=builder.create();
-        dialog.show();
-        //builder.show();
-
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                EditText editTextName = (EditText) layoutView.findViewById(R.id.editText_add_duty_name);
-                String name = editTextName.getText().toString();
-
-                EditText editTextDescription = (EditText) layoutView.findViewById(R.id.editText_add_duty_description);
-                String description = editTextDescription.getText().toString();
-
-
-                TextView textViewErorr = (TextView) layoutView.findViewById(R.id.ErrorAddDuty);
-                ArrayList<String> roomDutiesList = ((MyApplicationClass) getApplicationContext()).roomDutiesList;
-
-                if (name.equals("") || name==null || name.length() <= 0) {
-                    textViewErorr.setText("Please add the name of the Duty.");
-                    textViewErorr.setVisibility(View.VISIBLE);
-                } else if (roomDutiesList.contains(name)) {
-                    textViewErorr.setText("Duty with this name already present");
-                    textViewErorr.setVisibility(View.VISIBLE);
-                } else {
-                    textViewErorr.setVisibility(View.GONE);
-
-                    *//*if (outerSelectedRoommate.length > 0) {
-                        String displaySuccessAlert = "An email has been sent to your Roommates. Once everyone approves your request to add the Duty " + name + ", " + name + " will be added to your Room Duties List";
-                        Toast toast = Toast.makeText(RoomDutiesActivity.this, displaySuccessAlert, Toast.LENGTH_LONG);
-                        toast.setGravity(Gravity.CENTER, 0, 0);
-                        toast.show();
-                    }*//*
-
-                    boolean addNewDuty = databaseAccess.addNewDutyToRoom(selectedRoom, name, description);
-                    if (addNewDuty) {
-
-                        if(outerSelectedAmend[0]!=null && outerSelectedAmend[0].length()>0)
-                            databaseAccess.linkDutyWithAmend(selectedRoom, outerSelectedAmend[0], name);
-
-                        if(outerSelectedRoommate[0]!=null && outerSelectedRoommate[0].length()>0)
-                            databaseAccess.linkDutyWithRoommate(selectedRoom, name, outerSelectedRoommate[0]);
-
-                        ArrayList<DutyBean> roomDuties = databaseAccess.getRoomDuties(selectedRoom);
-                        ArrayList<String> dutiesListItems = null;
-
-                        if (roomDuties!=null) {
-                            dutiesListItems = new ArrayList<>();
-
-                            for (DutyBean roomDuty : roomDuties) {
-                                dutiesListItems.add(roomDuty.getDutyName());
-                            }
-
-                            ListView dutiesListView = (ListView) RoomDutiesActivity.this.findViewById(R.id.RoomDutiesList);
-                            adapter = new ArrayAdapter<String>(RoomDutiesActivity.this, android.R.layout.simple_list_item_1, dutiesListItems);
-                            dutiesListView.setAdapter(adapter);
-
-                            TextView textView = (TextView) RoomDutiesActivity.this.findViewById(R.id.ErrorViewDuties);
-                            textView.setVisibility(View.GONE);
-                            dialog.dismiss();
-                        }
-                    }else {
-                        textViewErorr.setText("Some unexpected error has occured");
-                        textViewErorr.setVisibility(View.VISIBLE);
-                    }
-                }
-            }
-        });*/
         AmendsAndRoommatesToDialog amendsAndRoommatesToDialog=new AmendsAndRoommatesToDialog();
         amendsAndRoommatesToDialog.execute();
     }

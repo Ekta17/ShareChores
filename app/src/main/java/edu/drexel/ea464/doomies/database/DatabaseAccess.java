@@ -1,7 +1,5 @@
 package edu.drexel.ea464.doomies.database;
 
-
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 
@@ -137,7 +135,7 @@ public class DatabaseAccess {
         return result;
     }
 
-    //Verify and return if valid user
+    //Verify user using email and password, and return if valid user
     public UserBean verifyAndGetUser(String email, String password) {
         String getUserDetails = "SELECT name,email,phone FROM UserDetails WHERE email='"+email+"' and password='"+password+"'";
 
@@ -176,6 +174,7 @@ public class DatabaseAccess {
         return user;
     }
 
+    //Return the room information for rooms which are linked to the user with specified email id
     public ArrayList<RoomBean> getLinkedRooms(String userEmail){
 
         ArrayList<RoomBean> roomsLinked=null;
@@ -217,6 +216,7 @@ public class DatabaseAccess {
         return roomsLinked;
     }
 
+    //Verify if the user has a room with the same name as passed as a parameter to this function
     public boolean checkIfRoomAlreadyExists(String roomName, String userEmail){
 
         String checkIfRoomExists="Select roomName from Room where roomName='"+roomName+"' and email='"+userEmail+"'";
@@ -247,6 +247,7 @@ public class DatabaseAccess {
         return result;
     }
 
+    //Return the task information for the user with a specified room and email id
     public  ArrayList<TaskBean> getTasksList(String userLoggedIn, String selectedRoom){
 
         ArrayList<TaskBean> tasksAssigned=null;
@@ -296,6 +297,7 @@ public class DatabaseAccess {
 
     }
 
+    //Return the due date of the task passed as a parameter to this function.
     public String getDueDateOfTask(String selectedTask,String userLoggedIn,String selectedRoom){
         String dueDate=null;
 
@@ -328,6 +330,7 @@ public class DatabaseAccess {
         return dueDate;
     }
 
+    //Return the duty information for duties which are linked to the specified room
     public ArrayList<DutyBean> getRoomDuties(String selectedRoom){
         ArrayList<DutyBean> roomDuties=null;
         DutyBean dutyBean=null;
@@ -367,6 +370,7 @@ public class DatabaseAccess {
         return roomDuties;
     }
 
+    //Return the list of roommates who are linked to the specified room
     public ArrayList<String> getRoommates(String selectedRoom){
 
         ArrayList<String> roommatesList=new ArrayList<>();
@@ -401,6 +405,7 @@ public class DatabaseAccess {
         return roommatesList;
     }
 
+    //Return the amend information for amends which are linked to the specified room
     public ArrayList<AmendBean> getRoomAmends(String selectedRoom){
         ArrayList<AmendBean> roomAmends=null;
         AmendBean amendBean=null;
@@ -440,6 +445,7 @@ public class DatabaseAccess {
         return roomAmends;
     }
 
+    //Map the specified amend with duty for a given room
     public boolean linkDutyWithAmend(String selectedRoom, String amendName, String dutyName){
 
         int rowInserted=0;
@@ -466,6 +472,7 @@ public class DatabaseAccess {
             return false;
     }
 
+    //Map the specified Roommate with duty for a given room
     public boolean linkDutyWithRoommate(String selectedRoom,String dutyName,String selectedRoommate){
 
         int rowInserted=0;
@@ -492,6 +499,7 @@ public class DatabaseAccess {
             return false;
     }
 
+    //Add a new duty to a room
     public boolean addNewDutyToRoom(String selectedRoom,String name,String description){
         int rowInserted=0;
         String insertDutyInRoom="Insert into Duties (dutyName,dutyDescription,roomName) values ('"+name+"','"+description+"','"+selectedRoom+"');";
@@ -517,6 +525,7 @@ public class DatabaseAccess {
             return false;
     }
 
+    //Add a new Amend to a room
     public boolean addNewAmendToRoom(String selectedRoom,String name,String description){
         int rowInserted=0;
         String insertAmendInRoom="Insert into Amends (amendName,amendDescription,roomName) values ('"+name+"','"+description+"','"+selectedRoom+"');";
@@ -542,11 +551,9 @@ public class DatabaseAccess {
             return false;
     }
 
+    //Add a new roommate to a room
     public boolean addNewRoommate(String selectedRoom,String name,String email){
         int rowInserted=0;
-        //Check is user with name and email exists in the system
-        //if not then send back an error msg saying the roommates should be a part of the system first.
-        //If yes then add the email and roomName to Room with the desciption of the room
 
         boolean flag_add_user=createNewUser(name,"1",email,"12345");
         if(flag_add_user) {
@@ -573,6 +580,7 @@ public class DatabaseAccess {
         return false;
     }
 
+    //Add a new room and link it to the user specified
     public boolean addNewRoom(String roomName,String roomDescription,String loggedInUser){
         int rowInserted=0;
 
@@ -599,6 +607,7 @@ public class DatabaseAccess {
             return false;
     }
 
+    //This creates a default room in DB and helps with Testing
     public void insertDeafultRow(String selectedRoom, String userLoggedIn){
 
         String dutyName="duty3";

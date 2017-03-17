@@ -8,18 +8,7 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="edu.drexel.ea464.doomies.RoomAmendsActivity"
     tools:showIn="@layout/activity_room_amends">
-
-   <!-- <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="right"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="60dp"
-        android:linksClickable="true"
-        android:onClick="goBackHomeFromAmends"
-        android:text="@string/link_back_to_home"
-        android:textColor="@color/colorPrimary" />-->
-
+    
     <TextView
         android:id="@+id/title_view_roomAmends"
         android:layout_width="wrap_content"

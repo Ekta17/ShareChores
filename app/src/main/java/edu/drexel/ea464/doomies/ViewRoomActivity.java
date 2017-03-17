@@ -1,17 +1,11 @@
 package edu.drexel.ea464.doomies;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import edu.drexel.ea464.doomies.database.DatabaseAccess;
@@ -20,7 +14,6 @@ public class ViewRoomActivity extends AppCompatActivity {
 
     private static String selectedRoom;
     private static String userLoggedIn;
-    //private static String test_flag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,10 +28,6 @@ public class ViewRoomActivity extends AppCompatActivity {
         this.selectedRoom=roomName;
         this.userLoggedIn=((MyApplicationClass)getApplicationContext()).user.getEmail();
 
-        //Checking if threads are created
-       /* InsertRow row=new InsertRow();
-        row.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, selectedRoom, userLoggedIn );
-*/
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         TextView textViewRoomDescription=(TextView)findViewById(R.id.ViewRoomDescription);
@@ -77,11 +66,6 @@ public class ViewRoomActivity extends AppCompatActivity {
         Intent intent=new Intent(this,RoomAmendsActivity.class);
         startActivity(intent);
     }
-
-    /*public void viewLogs(View view){
-        *//*Intent intent=new Intent(this,RoomAmendsActivity.class);
-        startActivity(intent);*//*
-    }*/
 
     private class InsertRow extends AsyncTask{
 

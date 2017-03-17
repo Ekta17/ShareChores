@@ -17,7 +17,6 @@ import java.util.ArrayList;
 
 import edu.drexel.ea464.doomies.database.DatabaseAccess;
 
-//@MainThread
 public class EntryPageActivity extends AppCompatActivity {
 
     UserBean getUser;

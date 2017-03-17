@@ -12,7 +12,6 @@ public class MyApplicationClass extends Application {
 
    public Boolean DB_CREATION_SUCCESS;
    public ArrayList<String> roomNames=new ArrayList<String>();
-   //public ArrayList<String> myTaskList=new ArrayList<String>();
 
     public ArrayList<String> roommatesList=new ArrayList<String>();
     public ArrayList<String> roomDutiesList=new ArrayList<String>();
